@@ -5,7 +5,7 @@ const service = require("../services/popcorn");
 const { CustomError } = require("../helpers/errors");
 
 // search movies
-router.get("/search", (req, res, next) =>
+router.get("/list", (req, res, next) =>
   service
     .getMovies(req.query)
     .then(results => res.send(results))
@@ -51,6 +51,64 @@ router.get("/stream/:imdbid", async (req, res, next) => {
     );
 
     torrentsLib.request(torrent.hash, (err, torrent) => {
+      if (err) throw new CustomError(500, err.message || "Torrents Lib Error");
+      const file = torrent.files.find(
+        f => mime.getType(f.name).indexOf("video") !== -1
+      );
+      torrentsLib.serveFile(file, req, res);
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// search tvshows
+router.get("/tvshows", (req, res, next) =>
+  service
+    .getMovies(req.query)
+    .then(results => res.send(results))
+    .catch(err => next(err))
+);
+
+// get tvshow details by its imdbid
+router.get("/tvshow/:imdbid", (req, res, next) =>
+  service
+    .getMovie(req.params.imdbid, true)
+    .then(movie => res.send(movie))
+    .catch(err => next(err))
+);
+
+// get tvshow suggestions by its imdbid
+router.get("/tvshow/:imdbid/suggestions", (req, res, next) =>
+  service
+    .getMovieSuggestions(req.params.id)
+    .then(tvshow => res.send(tvshow))
+    .catch(err => next(err))
+);
+
+// get movie torrents by its imdbid
+router.get("/tvshowtorrents/:imdbid", (req, res, next) =>
+  service
+    .getTVShowTorrents(req.params.imdbid)
+    .then(torrents => res.send(torrents))
+    .catch(err => next(err))
+);
+
+// stream tvshow by imdbid
+router.get("/tvshowstream/:imdbid", async (req, res, next) => {
+  const r = req.query;
+  const quality = r.quality || r.q;
+  const language = r.language || r.l;
+
+  try {
+    const torrent = await service.selectTVShowTorrent(
+      req.params.imdbid,
+      // @ts-ignore
+      quality,
+      language
+    );
+
+    torrentsLib.request(torrent.id, (err, torrent) => {
       if (err) throw new CustomError(500, err.message || "Torrents Lib Error");
       const file = torrent.files.find(
         f => mime.getType(f.name).indexOf("video") !== -1

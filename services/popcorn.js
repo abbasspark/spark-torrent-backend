@@ -35,6 +35,29 @@ class POPService {
   }
 
   /**
+   * search movies
+   * @param {Object} options - search options
+   * https://api.apipop.net/shows?cb=0.7984470857026715&sort=seeds&page=1&ver=100.0.0.0.&os=windows&app_id=T4P_ONL
+   */
+  async searchTVShows(options) {
+    options = Object.assign(
+      {
+        cb: Math.random(),
+        sort: "seeds",
+        page: 1,
+        ver: "100.0.0.0.",
+        os: "windows",
+        app_id: "T4P_ONL",
+        genre: ""
+      },
+      options
+    );
+
+    if (options.query) options.query_term = options.query;
+    return this.getMovies(options);
+  }
+
+  /**
    * get a list of movies
    * @param {SearchOptions|String} [params]
    * @param {number} [page=1]
@@ -53,6 +76,27 @@ class POPService {
        
     return data;
   }
+
+  /**
+   * get a list of TVShows
+   * @param {SearchOptions|String} [params]
+   * @param {number} [page=1]
+   * @return {Promise}
+   */
+  async getTVShows(params, page = 1) {
+    if (params && typeof params === "string")
+      params = { query_term: params, page };
+
+    const { data } = await axios.get("https://api.apipop.net/shows", {
+      params
+    });
+
+    if (!data)
+      throw new CustomError(500, "service error");
+       
+    return data;
+  }
+
 
   /**
    * get a movie by its id
@@ -85,6 +129,34 @@ class POPService {
   }
 
   /**
+   * get a TVShow by its id
+   * @param {string} id - TVShow imdbid
+   * @param {boolean} [details=false] return extra details
+   * @return {Promise}
+   * https://api.apipop.net/show?imdb=tt6470478&ver=100.0.0.0.&os=windows&app_id=T4P_ONL
+   */
+  async getTVShow(id) {
+    const params = 
+         {
+           imdb:id,
+           ver: "100.0.0.0.",
+           os: "windows",
+           app_id: "T4P_ONL",
+         } ;
+   
+        const { data } = await axios("https://api.apipop.net/show", {
+         params
+       });
+ 
+       if (!data)
+         throw new CustomError(500, "service error");
+ 
+       return data;
+    
+   }
+ 
+
+  /**
    * get movie suggestions by its id
    * @param {string} id - movie imdbid
    * @return {Promise<Array>}
@@ -110,7 +182,16 @@ class POPService {
    */
   async getMovieTorrents(id) {
     const movie = await this.getMovie(id);
-    return movie.torrents;
+    return movie;
+  }
+
+  /**
+   * get TVShow torrents by its imdbid
+   * @param {string} id - movie imdbid
+   */
+  async getTVShowTorrents(id) {
+    const TVShow = await this.getTVShow(id);
+    return TVShow;
   }
 
   /**
@@ -132,14 +213,51 @@ class POPService {
 
     // select type
     if (!language) {
- 
-        const exists = torrents.some(t => t.type === ty);
+      data = torrents.items_lang.filter(t => t.language === language);
+    } else data = torrents.items;
+
+    if (data.length === 0) throwError();
+
+    // select quality
+    if (!quality) {
+      const qualities = ["3D", "2160p", "1080p", "720p"];
+      for (const q of qualities) {
+        const exists = data.some(t => t.quality === q);
         if (exists) {
-          data =  torrents.items_lang.filter(t => t.language === language);
+          data = data.filter(t => t.quality === q);
           break;
         }
-  
-    } else data = torrents.items_lang;
+      }
+    } else data = data.filter(t => t.quality === quality);
+
+    // if selected torrent has no data
+    if (data.length === 0) throwError();
+
+    // return the first torrent in the list should be the only remaining one
+    return data[0];
+  }
+
+    /**
+   * select TVShow torrent file
+   * @param {string} id - TVShow imdbid
+   * @param {string} quality - TVShow quality [720p, 1080p, 2160p, 3D]
+   * @param {string} language  - TVShow language [en, br]
+   * @return {TorrentFile} torrent file
+   */
+  async selectTVShowTorrent(id, quality, language) {
+    const torrents = await this.getTVShowTorrents(id);
+    const throwError = () => {
+      throw new CustomError(404, "torrent file not found");
+    };
+
+    if (torrents.length === 0) throwError();
+
+    let data = [];
+
+    // select type
+    if (!language) {
+      data = torrents.items_lang.filter(t => t.language === language);
+    } else data = torrents.items;
 
     if (data.length === 0) throwError();
 
