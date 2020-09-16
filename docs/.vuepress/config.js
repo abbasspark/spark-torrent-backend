@@ -1,8 +1,8 @@
 const { version } = require("../../package.json");
 
 module.exports = {
-  title: "Live Torrent Backend",
-  description: "The backend project for the live-torrent project",
+  title: "Spark Torrent Backend",
+  description: "The backend project for the Spark-torrent project",
   base: "/docs/",
   themeConfig: {
     version,
@@ -27,7 +27,7 @@ module.exports = {
         link: "/guide.md"
       }
     ],
-    repo: "Davenchy/live-torrent-backend",
+    repo: "abbasspark/spark-torrent-backend",
     repoLabel: "Github!",
     docsDir: "docs",
     editLinks: true,
