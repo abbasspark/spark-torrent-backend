@@ -8,7 +8,6 @@ module.exports = {
     version,
     sidebar: [
       "/",
-      "/guide.md",
       {
         title: "APIs",
         collapsable: false,
@@ -19,12 +18,6 @@ module.exports = {
           "/api/search.md",
           "/api/yts.md"
         ]
-      }
-    ],
-    nav: [
-      {
-        text: "Guide",
-        link: "/guide.md"
       }
     ],
     repo: "abbasspark/spark-torrent-backend",
