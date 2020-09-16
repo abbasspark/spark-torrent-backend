@@ -65,7 +65,7 @@ router.get("/stream/:imdbid", async (req, res, next) => {
 // search tvshows
 router.get("/tvshows", (req, res, next) =>
   service
-    .getMovies(req.query)
+    .getTVShows(req.query)
     .then(results => res.send(results))
     .catch(err => next(err))
 );
@@ -73,16 +73,8 @@ router.get("/tvshows", (req, res, next) =>
 // get tvshow details by its imdbid
 router.get("/tvshow/:imdbid", (req, res, next) =>
   service
-    .getMovie(req.params.imdbid, true)
+    .getTVShow(req.params.imdbid, true)
     .then(movie => res.send(movie))
-    .catch(err => next(err))
-);
-
-// get tvshow suggestions by its imdbid
-router.get("/tvshow/:imdbid/suggestions", (req, res, next) =>
-  service
-    .getMovieSuggestions(req.params.id)
-    .then(tvshow => res.send(tvshow))
     .catch(err => next(err))
 );
 
