@@ -77,11 +77,10 @@ class POPService {
         params
       });
 
-      if (data.status !== "ok")
-        throw new CustomError(500, data.status_message || "servce error");
-      const newMovie = data;
-      if (!newMovie) throw new CustomError(404, "movie not found");
-      return newMovie;
+      if (!data)
+        throw new CustomError(500, "service error");
+
+      return data;
    
   }
 
