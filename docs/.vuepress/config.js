@@ -20,8 +20,6 @@ module.exports = {
         ]
       }
     ],
-    repo: "abbasspark/spark-torrent-backend",
-    repoLabel: "Github!",
     docsDir: "docs",
     editLinks: true,
     editLinkText: "Help us improve this page!",
