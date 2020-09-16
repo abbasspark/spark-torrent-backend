@@ -48,13 +48,10 @@ class POPService {
       params
     });
 
-    if (data.status !== "ok")
-      throw new CustomError(500, data.status_message || "service error");
-
-    if (data.data.movie_count === 0)
-      throw new CustomError(404, "no results found");
-    
-    return data.data;
+    if (!data)
+      throw new CustomError(500, "service error");
+       
+    return data;
   }
 
   /**
