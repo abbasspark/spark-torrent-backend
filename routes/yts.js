@@ -55,8 +55,7 @@ router.get("/stream/:imdbid", async (req, res, next) => {
       const file = torrent.files.find(
         f => mime.getType(f.name).indexOf("video") !== -1
       );
-      res.send(file) // to be commented
-      torrentsLib.serveFile(file, req, res);
+     torrentsLib.serveFile(file, req, res);
     });
   } catch (err) {
     next(err);
