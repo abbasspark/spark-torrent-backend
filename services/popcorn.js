@@ -203,7 +203,7 @@ class POPService {
    */
   async selectMovieTorrent(id, quality, language) {
     const torrents = await this.getMovieTorrents(id);
-    const throwError = () => {
+    const throwError = (err="") => {
       throw new CustomError(404, torrents);
     };
 
@@ -213,10 +213,10 @@ class POPService {
 
     // select type
     if (!language) {
-      if (torrents.items_lang.length === 0) throwError();
+      if (torrents.items_lang.length === 0) throwError("items_lang");
       data = torrents.items_lang.filter(t => t.language === language);
     } else {
-      if (torrents.items.length === 0) throwError();
+      if (torrents.items.length === 0) throwError("items");
       data = torrents.items;
     }
       console.log({data})
