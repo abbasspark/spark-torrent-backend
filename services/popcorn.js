@@ -204,17 +204,21 @@ class POPService {
   async selectMovieTorrent(id, quality, language) {
     const torrents = await this.getMovieTorrents(id);
     const throwError = () => {
-      throw new CustomError(404, "torrent file not found");
+      throw new CustomError(404, "torrent items not found");
     };
 
-    if (torrents.length === 0) throwError();
+   
 
     let data = [];
 
     // select type
     if (!language) {
+      if (torrents.items_lang.length === 0) throwError();
       data = torrents.items_lang.filter(t => t.language === language);
-    } else data = torrents.items;
+    } else {
+      if (torrents.items.length === 0) throwError();
+      data = torrents.items;
+    }
       console.log({data})
     if (data.length === 0) throwError();
 
