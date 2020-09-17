@@ -39,7 +39,7 @@ function playList(req, res) {
   (custom ? selectedFiles : torrent.files).forEach(file => {
     if (file.type.indexOf("video") === -1 && file.type.indexOf("audio") === -1)
       return;
-    m3uStr += `#EXTINF:-1,${file.file}\n${host}/api/torrent/serve/${torrent.id}${file.cleanPath}\n`;
+    m3uStr += `#EXTINF:-1,${file.name}\n${host}/torrent/serve/${torrent.id}${file.cleanPath}\n`;
   });
 
   res.attachment(torrent.name + ".m3u");
@@ -54,7 +54,7 @@ function torrentFile(req, res) {
   const { torrent } = req;
   const file = torrent.torrentFile;
   res.attachment(torrent.file + ".torrent");
-  res.setHeader("Content-Length", file.size_bytes);
+  res.setHeader("Content-Length", file.length);
   res.setHeader("Content-Type", "application/x-bittorrent");
   req.connection.setTimeout(30000);
 
