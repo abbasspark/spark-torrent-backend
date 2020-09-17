@@ -204,7 +204,7 @@ class POPService {
   async selectMovieTorrent(id, quality, language) {
     const torrents = await this.getMovieTorrents(id);
     const throwError = (err="") => {
-      throw new CustomError(404, torrents);
+      throw new CustomError(404, torrents,err);
     };
 
    
