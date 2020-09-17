@@ -212,7 +212,7 @@ class POPService {
     let data = [];
 
     // select type
-    if (!language) {
+    if (language !='') {
       if (torrents.items_lang.length === 0) throwError("items_lang");
       data = torrents.items_lang.filter(t => t.language === language);
     } else {
