@@ -213,11 +213,11 @@ class POPService {
 
     // select type
     if (!language) {
-      if (torrents.items_lang.length === 0) throwError();
-      data = torrents.items_lang.filter(t => t.language === language);
+      if (torrents.data.items_lang.length === 0) throwError();
+      data = torrents.data.items_lang.filter(t => t.language === language);
     } else {
-      if (torrents.items.length === 0) throwError();
-      data = torrents.items;
+      if (torrents.data.items.length === 0) throwError();
+      data = torrents.data.items;
     }
       console.log({data})
     if (data.length === 0) throwError();
