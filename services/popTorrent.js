@@ -40,10 +40,10 @@ const addOns = (torrent, cb) => {
     f.cleanPath = f.path.substr(torrent.name.length);
   });
   torrent.toJSON = () => ({
-    name: torrent.file,
-    infoHash: torrent.id,
-    size: torrent.size_bytes,
-    peers: torrent.torrent_peers,
+    name: torrent.name,
+    infoHash: torrent.infoHash,
+    size: torrent.length,
+    peers: torrent.numPeers,
     files: torrent.files.map(f => f.toJSON())
   });
   cb(null, torrent);
@@ -60,7 +60,7 @@ function request(torrentId, cb) {
   torrent.on("error", e => {
     // @ts-ignore
     if (e.message.indexOf("Cannot add duplicate torrent") !== -1) {
-      addOns(client.get(torrent.id), cb);
+      addOns(client.get(torrent.infoHash), cb);
     } else cb(e);
   });
   torrent.on("ready", () => addOns(torrent, cb));
@@ -76,9 +76,9 @@ function request(torrentId, cb) {
  * @param {Object} res - express middleware res
  */
 function serveFile(file, req, res) {
-  if (file) {
+  if (!file) {
     res.statusCode = 404;
-    return res.send(file);
+    return res.send();
   }
 
   res.statusCode = 200;
@@ -89,11 +89,11 @@ function serveFile(file, req, res) {
 
   // Set name of file (for "Save Page As..." dialog)
   // res.setHeader("Content-Disposition", `inline; filename*=UTF-8''${file.name}`);
-  res.attachment(file.file);
+  res.attachment(file.name);
 
   // `rangeParser` returns an array of ranges, or an error code (number) if
   // there was an error parsing the range.
-  let range = rangeParser(file.size_bytes, req.headers.range || "");
+  let range = rangeParser(file.length, req.headers.range || "");
 
   if (Array.isArray(range)) {
     res.statusCode = 206; // indicates that range-request was understood
@@ -105,13 +105,13 @@ function serveFile(file, req, res) {
     res.setHeader(
       "Content-Range",
       // @ts-ignore
-      `bytes ${range.start}-${range.end}/${file.size_bytes}`
+      `bytes ${range.start}-${range.end}/${file.length}`
     );
     // @ts-ignore
     res.setHeader("Content-Length", range.end - range.start + 1);
   } else {
     range = null;
-    res.setHeader("Content-Length", file.size_bytes);
+    res.setHeader("Content-Length", file.length);
   }
 
   if (req.method === "HEAD") {
