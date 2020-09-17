@@ -207,14 +207,14 @@ class POPService {
       throw new CustomError(404, "torrent file not found");
     };
 
-    if (torrents.length === 0) throwError();
+    if (torrents.data.length === 0) throwError();
 
     let data = [];
 
     // select type
     if (!language) {
-      data = torrents.items_lang.filter(t => t.language === language);
-    } else data = torrents.items;
+      data = torrents.data.items_lang.filter(t => t.language === language);
+    } else data = torrents.data.items;
 
     if (data.length === 0) throwError();
 

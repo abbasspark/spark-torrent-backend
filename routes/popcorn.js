@@ -40,17 +40,18 @@ router.get("/torrents/:imdbid", (req, res, next) =>
 router.get("/stream/:imdbid", async (req, res, next) => {
   const r = req.query;
   const quality = r.quality || r.q;
-  const type = r.type || r.t;
-
+  const language = (r.language='en'?'': r.language) || (r.l ='en'?'': r.l);
+  if (r.language) throw new CustomError(500, "please select langauge");
+  if (quality) throw new CustomError(500, "please select quality");
   try {
     const torrent = await service.selectMovieTorrent(
       req.params.imdbid,
       // @ts-ignore
       quality,
-      type
+      language
     );
 
-    torrentsLib.request(torrent.hash, (err, torrent) => {
+    torrentsLib.request(torrent.id, (err, torrent) => {
       if (err) throw new CustomError(500, err.message || "Torrents Lib Error");
       const file = torrent.files.find(
         f => mime.getType(f.name).indexOf("video") !== -1
@@ -90,8 +91,9 @@ router.get("/tvshowtorrents/:imdbid", (req, res, next) =>
 router.get("/tvshowstream/:imdbid", async (req, res, next) => {
   const r = req.query;
   const quality = r.quality || r.q;
-  const language = r.language || r.l;
-
+  const language = (r.language='en'?'': r.language) || (r.l ='en'?'': r.l);
+  if (r.language) throw new CustomError(500, "please select langauge");
+  if (quality) throw new CustomError(500, "please select quality");
   try {
     const torrent = await service.selectTVShowTorrent(
       req.params.imdbid,
