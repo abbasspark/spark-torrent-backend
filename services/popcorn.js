@@ -204,7 +204,7 @@ class POPService {
   async selectMovieTorrent(id, quality, language) {
     const torrents = await this.getMovieTorrents(id);
     const throwError = () => {
-      throw new CustomError(404, "torrent items not found");
+      throw new CustomError(404, torrents);
     };
 
    
