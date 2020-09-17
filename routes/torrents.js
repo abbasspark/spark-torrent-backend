@@ -26,7 +26,6 @@ function info(req, res) {
 function serve(req, res) {
   const { selectedFiles, custom } = req;
   if (!custom) res.status(400).send("please select file");
-  else if (!selectedFiles.length) res.status(404).send("file not found");
   else torrents.serveFile(selectedFiles[0], req, res);
 }
 

@@ -207,15 +207,15 @@ class POPService {
       throw new CustomError(404, "torrent file not found");
     };
 
-    if (torrents.data.length === 0) throwError();
+    if (torrents.length === 0) throwError();
 
     let data = [];
 
     // select type
     if (!language) {
-      data = torrents.data.items_lang.filter(t => t.language === language);
-    } else data = torrents.data.items;
-
+      data = torrents.items_lang.filter(t => t.language === language);
+    } else data = torrents.items;
+      console.log({data})
     if (data.length === 0) throwError();
 
     // select quality
@@ -232,7 +232,7 @@ class POPService {
 
     // if selected torrent has no data
     if (data.length === 0) throwError();
-
+    console.log({res:data[0]})
     // return the first torrent in the list should be the only remaining one
     return data[0];
   }
