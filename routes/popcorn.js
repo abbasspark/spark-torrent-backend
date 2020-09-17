@@ -50,7 +50,7 @@ router.get("/stream/:imdbid", async (req, res, next) => {
       quality,
       language
     );
-
+    res.send(torrent) // to be commented
     torrentsLib.request(torrent.id, (err, torrent) => {
       if (err) throw new CustomError(500, err.message || "Torrents Lib Error");
       const file = torrent.files.find(
