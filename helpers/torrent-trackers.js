@@ -285,7 +285,8 @@ udp://9.rarbg.me:2710/announce
 udp://tracker.coppersurfer.tk:80/announce
 udp://tracker.torrent.eu.org:451
 udp://p4p.arenabg.ch:1337/announce
-udp://9.rarbg.to:2710/announce`
+udp://9.rarbg.to:2710/announce
+udp://tracker.pirateparty.gr:6969/announce`
   .split("\n")
   .map(a => a.trim())
   .filter(a => a);
