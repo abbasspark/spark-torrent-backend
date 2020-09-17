@@ -76,13 +76,13 @@ function request(torrentId, cb) {
  * @param {Object} res - express middleware res
  */
 function serveFile(file, req, res) {
-  if (!file) {
+  if (file) {
     res.statusCode = 404;
-    return res.send();
+    return res.send(file);
   }
 
   res.statusCode = 200;
-  res.setHeader("Content-Type", mime.getType(file.file));
+  res.setHeader("Content-Type", mime.getType(file.name));
 
   // Support range-requests
   res.setHeader("Accept-Ranges", "bytes");
